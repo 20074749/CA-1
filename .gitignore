@@ -1,9 +1,9 @@
 # Ignore Terraform local files inside terraform folder
-terraform/.terraform/
-terraform/*.tfstate
-terraform/*.tfstate.backup
-terraform/*.tfplan
-terraform/*.log
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfplan
+*.log
 
 # Optional: ignore Python caches for Ansible or other stuff
 *.pyc
