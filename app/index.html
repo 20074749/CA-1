@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ahmad Calculator</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --panel:#0b1220;
+      --accent:#7c3aed;
+      --glass: rgba(255,255,255,0.04);
+      --text:#e6eef8;
+      --muted: rgba(230,238,248,0.6);
+      --btn-radius:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#071129 0%, #081226 100%);
+      color:var(--text);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .calculator {
+      width:360px;
+      max-width:95%;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:20px;
+      padding:18px;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.7);
+      backdrop-filter: blur(6px);
+    }
+
+    .header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .title{
+      font-weight:600;
+      letter-spacing:0.2px;
+    }
+    .subtitle{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .screen {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;
+      padding:14px;
+      text-align:right;
+      min-height:64px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:6px;
+      margin-bottom:12px;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+    .expression{
+      color:var(--muted);
+      font-size:14px;
+      min-height:18px;
+      word-wrap:anywhere;
+    }
+    .result{
+      font-size:28px;
+      font-weight:700;
+      letter-spacing:0.6px;
+    }
+
+    .keys{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+    }
+
+    button.key {
+      border: none;
+      padding:14px;
+      border-radius:12px;
+      font-size:18px;
+      cursor:pointer;
+      user-select:none;
+      box-shadow: 0 4px 8px rgba(2,6,23,0.6);
+      transition: transform .08s ease, box-shadow .08s ease;
+      background:var(--glass);
+      color:var(--text);
+    }
+    button.key:active{ transform: translateY(2px) scale(.998) }
+
+    .key.op{ background: linear-gradient(180deg, rgba(124,58,237,0.16), rgba(124,58,237,0.08)); box-shadow: 0 6px 18px rgba(124,58,237,0.08); color:var(--text); }
+    .key.func{ background: rgba(255,255,255,0.03); color:var(--muted); font-weight:600; }
+    .key.zero{ grid-column: span 2; }
+    .key.equal{ background: linear-gradient(90deg,var(--accent), #5b21b6); color:white; font-weight:700; grid-column: span 1; }
+
+    .help {
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+      margin-top:10px;
+    }
+
+    @media (max-width:420px){
+      .result{font-size:24px}
+      button.key{padding:12px; font-size:16px}
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator" role="application" aria-label="Calculator">
+    <div class="header">
+      <div>
+        <div class="title">Ahmad Calculator</div>
+      </div>
+    </div>
+
+    <div class="screen" id="screen" aria-live="polite">
+      <div class="expression" id="exp"></div>
+      <div class="result" id="res">0</div>
+    </div>
+
+    <div class="keys" id="keys">
+      <!-- Row 1 -->
+      <button class="key func" data-action="clear">C</button>
+      <button class="key func" data-action="back">⌫</button>
+      <button class="key func" data-action="percent">%</button>
+      <button class="key op" data-value="/">÷</button>
+
+      <!-- Row 2 -->
+      <button class="key" data-value="7">7</button>
+      <button class="key" data-value="8">8</button>
+      <button class="key" data-value="9">9</button>
+      <button class="key op" data-value="*">×</button>
+
+      <!-- Row 3 -->
+      <button class="key" data-value="4">4</button>
+      <button class="key" data-value="5">5</button>
+      <button class="key" data-value="6">6</button>
+      <button class="key op" data-value="-">−</button>
+
+      <!-- Row 4 -->
+      <button class="key" data-value="1">1</button>
+      <button class="key" data-value="2">2</button>
+      <button class="key" data-value="3">3</button>
+      <button class="key op" data-value="+">+</button>
+
+      <!-- Row 5 -->
+      <button class="key zero" data-value="0">0</button>
+      <button class="key" data-value=".">.</button>
+      <button class="key equal" data-action="equal">=</button>
+
+      <!-- Extra row: parentheses -->
+      <button class="key func" data-value="(">(</button>
+      <button class="key func" data-value=")">)</button>
+    </div>
+
+    <div class="help">Tip: you can type on your keyboard. Press Enter to evaluate.</div>
+  </div>
+
+  <script>
+    (function(){
+      const expEl = document.getElementById('exp');
+      const resEl = document.getElementById('res');
+      const keys = document.getElementById('keys');
+
+      // internal expression string
+      let expression = '';
+
+      // update screen
+      function updateScreen(){
+        expEl.textContent = expression;
+        try {
+          const val = safeEval(expression);
+          resEl.textContent = (val === '' || val === undefined) ? '0' : String(val);
+        } catch (e) {
+          resEl.textContent = 'Err';
+        }
+      }
+
+      // safe evaluator: only allows digits, operators, parentheses, decimal, percent and whitespace
+      // It converts % to division by 100 and uses JS eval on the sanitized expression.
+      function safeEval(input){
+        if (!input || input.trim()==='') return '';
+        // Reject any disallowed characters
+        // allowed chars: digits, + - * / . ( ) % and spaces
+        if (!/^[0-9+\-*/().%\s]+$/.test(input)) {
+          throw new Error('Invalid characters');
+        }
+        // Replace percentage occurrences: e.g. "50%" => "(50/100)"
+        // But handle "50+10%" => "50+(10/100)"
+        let transformed = input.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
+        // Replace any accidental multiple operators like "++" etc (let JS handle errors)
+        // Evaluate using Function constructor (safer than eval in some contexts)
+        // Note: still local only; input sanitized earlier.
+        // Avoid allowing leading zeros trickery: it's fine for JS numbers.
+        // Evaluate
+        // Protect against extremely long inputs
+        if (transformed.length > 200) throw new Error('Expression too long');
+        // compute result
+        const result = Function('"use strict"; return (' + transformed + ')')();
+        // handle non-finite results
+        if (!isFinite(result)) throw new Error('Math error');
+        // trim unnecessary decimals: if integer show as integer, else round sensibly
+        if (Math.abs(result - Math.round(result)) < 1e-12) return Math.round(result);
+        return parseFloat(result.toFixed(12)).toString();
+      }
+
+      // handle button clicks
+      keys.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const val = btn.dataset.value;
+        const action = btn.dataset.action;
+
+        if (action === 'clear') {
+          expression = '';
+          updateScreen();
+          return;
+        }
+        if (action === 'back') {
+          expression = expression.slice(0, -1);
+          updateScreen();
+          return;
+        }
+        if (action === 'equal') {
+          try {
+            const value = safeEval(expression);
+            expression = String(value);
+            updateScreen();
+          } catch (err) {
+            resEl.textContent = 'Error';
+          }
+          return;
+        }
+        if (action === 'percent') {
+          // append % which safeEval will transform
+          expression += '%';
+          updateScreen();
+          return;
+        }
+        // value button (number, operator, dot, parentheses)
+        if (val !== undefined) {
+          expression += val;
+          updateScreen();
+        }
+      });
+
+      // keyboard support
+      window.addEventListener('keydown', (e) => {
+        // allow digits and operators via keys
+        const key = e.key;
+
+        // handle Enter / =
+        if (key === 'Enter' || key === '=') {
+          e.preventDefault();
+          try {
+            const value = safeEval(expression);
+            expression = String(value);
+            updateScreen();
+          } catch (err) {
+            resEl.textContent = 'Error';
+          }
+          return;
+        }
+
+        if (key === 'Backspace') {
+          expression = expression.slice(0, -1);
+          updateScreen();
+          return;
+        }
+
+        if (key === 'Escape' || key.toLowerCase() === 'c') {
+          expression = '';
+          updateScreen();
+          return;
+        }
+
+        // allow parentheses
+        if (key === '(' || key === ')') {
+          expression += key;
+          updateScreen();
+          return;
+        }
+
+        // percent
+        if (key === '%') {
+          expression += '%';
+          updateScreen();
+          return;
+        }
+
+        // allowed operator keys: + - * / . and digits
+        if (/^[0-9+\-*/.]$/.test(key)) {
+          expression += key;
+          updateScreen();
+          return;
+        }
+      });
+
+      // initialize
+      updateScreen();
+    })();
+  </script>
+</body>
+</html>
