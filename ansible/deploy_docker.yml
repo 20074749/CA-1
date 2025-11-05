@@ -1,0 +1,80 @@
+---
+- name: Deploy Docker container with HTML on Azure VM
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Ensure Python3 is installed (needed by Ansible)
+      raw: |
+        if ! command -v python3 >/dev/null 2>&1; then
+          apt-get update -y
+          apt-get install -y python3
+        fi
+      changed_when: false
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name: 
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Ensure python3-pip is installed
+      apt:
+        name: python3-pip
+        state: present
+        update_cache: yes
+
+    - name: Install Docker Python SDK (docker)
+      pip:
+        name: docker
+        executable: pip3
+
+    - name: Pull latest Docker image from Docker Hub
+      community.docker.docker_image:
+        name: 20074749/htmlcalculator:latest
+        source: pull
+        force_source: true
+        force_tag: true
+        state: present
+
+    - name: Ensure previous container is removed
+      community.docker.docker_container:
+        name: html_container
+        state: absent
+        keep_volumes: false
+
+    - name: Run Docker container
+      community.docker.docker_container:
+        name: html_container
+        image: 20074749/htmlcalculator:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "8080:80"

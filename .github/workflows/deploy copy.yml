@@ -1,0 +1,47 @@
+name: CI/CD - Deploy to Azure VM with Ansible
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add VM to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y python3-pip
+          pip3 install ansible
+          ansible-galaxy collection install community.docker
+
+      - name: Create inventory
+        run: |
+          echo "[webservers]" > inventory.ini
+          echo "azurevm ansible_host=${{ secrets.VM_HOST }} ansible_user=${{ secrets.VM_USER }}" >> inventory.ini
+          cat inventory.ini
+
+      - name: Run Ansible playbook
+        run: |
+          export ANSIBLE_HOST_KEY_CHECKING=False
+          ansible-playbook -i inventory.ini ansible/deploy_docker.yml --ssh-extra-args='-o StrictHostKeyChecking=no'
+
+      - name: Test connection to running container (optional)
+        run: |
+          curl -I http://${{ secrets.VM_HOST }}:8080 || echo "Container might not be ready yet."

@@ -1,0 +1,18 @@
+# Ignore Terraform local files inside terraform folder
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+*.tfplan
+*.tfvars
+*.log
+.terraformrc
+terraform.rc
+
+# Optional: ignore Python caches for Ansible or other stuff
+*.pyc
+__pycache__/
+
+# Ansible vault and sensitive files
+ansible/vault.yml
+*.vault.yml
