@@ -1,315 +1,407 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Ahmad Calculator</title>
-  <style>
-    :root{
-      --bg:#0f1724;
-      --panel:#0b1220;
-      --accent:#7c3aed;
-      --glass: rgba(255,255,255,0.04);
-      --text:#e6eef8;
-      --muted: rgba(230,238,248,0.6);
-      --btn-radius:14px;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      background:linear-gradient(180deg,#071129 0%, #081226 100%);
-      color:var(--text);
-      font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beautiful Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    .calculator {
-      width:360px;
-      max-width:95%;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:20px;
-      padding:18px;
-      box-shadow: 0 10px 30px rgba(2,6,23,0.7);
-      backdrop-filter: blur(6px);
-    }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f2f5;
+        }
 
-    .header {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      margin-bottom:12px;
-    }
-    .title{
-      font-weight:600;
-      letter-spacing:0.2px;
-    }
-    .subtitle{
-      font-size:12px;
-      color:var(--muted);
-    }
+        .calculator {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            padding: 25px;
+        }
 
-    .screen {
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:12px;
-      padding:14px;
-      text-align:right;
-      min-height:64px;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      gap:6px;
-      margin-bottom:12px;
-      border: 1px solid rgba(255,255,255,0.03);
-    }
-    .expression{
-      color:var(--muted);
-      font-size:14px;
-      min-height:18px;
-      word-wrap:anywhere;
-    }
-    .result{
-      font-size:28px;
-      font-weight:700;
-      letter-spacing:0.6px;
-    }
+        .display {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: right;
+        }
 
-    .keys{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:10px;
-    }
+        .previous-operand {
+            color: #6c757d;
+            font-size: 16px;
+            min-height: 24px;
+            margin-bottom: 5px;
+        }
 
-    button.key {
-      border: none;
-      padding:14px;
-      border-radius:12px;
-      font-size:18px;
-      cursor:pointer;
-      user-select:none;
-      box-shadow: 0 4px 8px rgba(2,6,23,0.6);
-      transition: transform .08s ease, box-shadow .08s ease;
-      background:var(--glass);
-      color:var(--text);
-    }
-    button.key:active{ transform: translateY(2px) scale(.998) }
+        .current-operand {
+            color: #212529;
+            font-size: 36px;
+            font-weight: bold;
+            min-height: 44px;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
 
-    .key.op{ background: linear-gradient(180deg, rgba(124,58,237,0.16), rgba(124,58,237,0.08)); box-shadow: 0 6px 18px rgba(124,58,237,0.08); color:var(--text); }
-    .key.func{ background: rgba(255,255,255,0.03); color:var(--muted); font-weight:600; }
-    .key.zero{ grid-column: span 2; }
-    .key.equal{ background: linear-gradient(90deg,var(--accent), #5b21b6); color:white; font-weight:700; grid-column: span 1; }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
 
-    .help {
-      text-align:center;
-      font-size:12px;
-      color:var(--muted);
-      margin-top:10px;
-    }
+        button {
+            padding: 20px 0;
+            border: none;
+            background: #f8f9fa;
+            color: #212529;
+            font-size: 20px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
 
-    @media (max-width:420px){
-      .result{font-size:24px}
-      button.key{padding:12px; font-size:16px}
-    }
-  </style>
+        button:hover {
+            background: #e9ecef;
+        }
+
+        button:active {
+            transform: scale(0.98);
+            background: #dee2e6;
+        }
+
+        .operator {
+            background: #e7f5ff;
+            color: #228be6;
+        }
+
+        .operator:hover {
+            background: #d0ebff;
+        }
+
+        .equals {
+            background: #228be6;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .equals:hover {
+            background: #1c7ed6;
+        }
+
+        .clear, .delete {
+            background: #fff5f5;
+            color: #e03131;
+        }
+
+        .clear:hover, .delete:hover {
+            background: #ffe3e3;
+        }
+
+        .error {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        @keyframes press {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        .pressed {
+            animation: press 0.2s ease;
+        }
+    </style>
 </head>
 <body>
-  <div class="calculator" role="application" aria-label="Calculator">
-    <div class="header">
-      <div>
-        <div class="title">FInal Calculator </div>
-      </div>
+    <div class="calculator">
+        <div class="calculator-header">
+            <h1>Calculator</h1>
+        </div>
+        <div class="display">
+            <div class="previous-operand"></div>
+            <div class="current-operand">0</div>
+        </div>
+        <div class="buttons">
+            <button class="clear">AC</button>
+            <button class="delete">DEL</button>
+            <button class="operator">%</button>
+            <button class="operator">÷</button>
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button class="operator">×</button>
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button class="operator">-</button>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button class="operator">+</button>
+            <button>0</button>
+            <button>.</button>
+            <button class="equals">=</button>
+        </div>
     </div>
 
-    <div class="screen" id="screen" aria-live="polite">
-      <div class="expression" id="exp"></div>
-      <div class="result" id="res">0</div>
-    </div>
+    <script>
+        class Calculator {
+            constructor() {
+                this.currentOperand = '0';
+                this.previousOperand = '';
+                this.operation = undefined;
+                this.shouldResetScreen = false;
+                this.maxDigits = 12;
 
-    <div class="keys" id="keys">
-      <!-- Row 1 -->
-      <button class="key func" data-action="clear">C</button>
-      <button class="key func" data-action="back">⌫</button>
-      <button class="key func" data-action="percent">%</button>
-      <button class="key op" data-value="/">÷</button>
+                this.display = document.querySelector('.display');
+                this.currentOperandDisplay = document.querySelector('.current-operand');
+                this.previousOperandDisplay = document.querySelector('.previous-operand');
 
-      <!-- Row 2 -->
-      <button class="key" data-value="7">7</button>
-      <button class="key" data-value="8">8</button>
-      <button class="key" data-value="9">9</button>
-      <button class="key op" data-value="*">×</button>
+                this.setupEventListeners();
+            }
 
-      <!-- Row 3 -->
-      <button class="key" data-value="4">4</button>
-      <button class="key" data-value="5">5</button>
-      <button class="key" data-value="6">6</button>
-      <button class="key op" data-value="-">−</button>
+            setupEventListeners() {
+                // Button clicks
+                document.querySelectorAll('.buttons button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const buttonText = button.textContent;
+                        
+                        if (button.classList.contains('clear')) {
+                            this.clear();
+                        } else if (button.classList.contains('delete')) {
+                            this.delete();
+                        } else if (button.classList.contains('equals')) {
+                            this.calculate();
+                        } else if (button.classList.contains('operator')) {
+                            this.handleOperator(buttonText);
+                        } else {
+                            this.appendNumber(buttonText);
+                        }
+                    });
+                });
 
-      <!-- Row 4 -->
-      <button class="key" data-value="1">1</button>
-      <button class="key" data-value="2">2</button>
-      <button class="key" data-value="3">3</button>
-      <button class="key op" data-value="+">+</button>
+                // Keyboard support
+                document.addEventListener('keydown', (event) => {
+                    if (event.key >= '0' && event.key <= '9' || event.key === '.') {
+                        this.appendNumber(event.key);
+                    }
+                    if (event.key === '+' || event.key === '-') {
+                        this.handleOperator(event.key);
+                    }
+                    if (event.key === '*') {
+                        this.handleOperator('×');
+                    }
+                    if (event.key === '/') {
+                        event.preventDefault();
+                        this.handleOperator('÷');
+                    }
+                    if (event.key === '%') {
+                        this.handleOperator('%');
+                    }
+                    if (event.key === 'Enter' || event.key === '=') {
+                        this.calculate();
+                    }
+                    if (event.key === 'Backspace') {
+                        this.delete();
+                    }
+                    if (event.key === 'Escape') {
+                        this.clear();
+                    }
+                });
+            }
 
-      <!-- Row 5 -->
-      <button class="key zero" data-value="0">0</button>
-      <button class="key" data-value=".">.</button>
-      <button class="key equal" data-action="equal">=</button>
+            clear() {
+                this.currentOperand = '0';
+                this.previousOperand = '';
+                this.operation = undefined;
+                this.updateDisplay();
+            }
 
-      <!-- Extra row: parentheses -->
-      <button class="key func" data-value="(">(</button>
-      <button class="key func" data-value=")">)</button>
-    </div>
+            delete() {
+                if (this.currentOperand.length === 1) {
+                    this.currentOperand = '0';
+                } else {
+                    this.currentOperand = this.currentOperand.slice(0, -1);
+                }
+                this.updateDisplay();
+            }
 
-    <div class="help">Tip: you can type on your keyboard. Press Enter to evaluate.</div>
-  </div>
+            appendNumber(number) {
+                if (this.shouldResetScreen) {
+                    this.currentOperand = '';
+                    this.shouldResetScreen = false;
+                }
+                
+                // Prevent multiple decimal points
+                if (number === '.' && this.currentOperand.includes('.')) return;
+                
+                // Handle initial zero
+                if (this.currentOperand === '0' && number !== '.') {
+                    this.currentOperand = number;
+                } else if (this.currentOperand.length < this.maxDigits) {
+                    this.currentOperand += number;
+                } else {
+                    this.showError();
+                    return;
+                }
+                
+                this.updateDisplay();
+            }
 
-  <script>
-    (function(){
-      const expEl = document.getElementById('exp');
-      const resEl = document.getElementById('res');
-      const keys = document.getElementById('keys');
+            handleOperator(operator) {
+                if (this.currentOperand === '') return;
+                if (this.previousOperand !== '') {
+                    this.calculate();
+                }
+                this.operation = operator;
+                this.previousOperand = this.currentOperand;
+                this.currentOperand = '';
+                this.updateDisplay();
+            }
 
-      // internal expression string
-      let expression = '';
+            calculate() {
+                let computation;
+                const prev = parseFloat(this.previousOperand);
+                const current = parseFloat(this.currentOperand);
+                
+                if (isNaN(prev) || isNaN(current)) return;
 
-      // update screen
-      function updateScreen(){
-        expEl.textContent = expression;
-        try {
-          const val = safeEval(expression);
-          resEl.textContent = (val === '' || val === undefined) ? '0' : String(val);
-        } catch (e) {
-          resEl.textContent = 'Err';
+                try {
+                    switch (this.operation) {
+                        case '+':
+                            computation = prev + current;
+                            break;
+                        case '-':
+                            computation = prev - current;
+                            break;
+                        case '×':
+                            computation = prev * current;
+                            break;
+                        case '÷':
+                            if (current === 0) throw new Error('Division by zero');
+                            computation = prev / current;
+                            break;
+                        case '%':
+                            computation = (prev * current) / 100;
+                            break;
+                        default:
+                            return;
+                    }
+
+                    // Format the result
+                    computation = this.formatResult(computation);
+                    
+                    this.currentOperand = computation.toString();
+                    this.operation = undefined;
+                    this.previousOperand = '';
+                    this.shouldResetScreen = true;
+                } catch (error) {
+                    this.showError();
+                    this.clear();
+                    return;
+                }
+                
+                this.updateDisplay();
+            }
+
+            formatResult(number) {
+                let stringNumber = number.toString();
+                
+                // Handle large numbers and small decimals
+                if (Math.abs(number) >= 1e12 || (Math.abs(number) < 0.000001 && number !== 0)) {
+                    return number.toExponential(6);
+                }
+                
+                // For regular numbers, limit decimal places
+                if (stringNumber.includes('.')) {
+                    const parts = stringNumber.split('.');
+                    if (parts[1].length > 8) {
+                        return parseFloat(number.toFixed(8));
+                    }
+                }
+                
+                return number;
+            }
+
+            showError() {
+                this.display.classList.add('error');
+                setTimeout(() => {
+                    this.display.classList.remove('error');
+                }, 500);
+            }
+
+            updateDisplay() {
+                this.currentOperandDisplay.textContent = this.currentOperand;
+                if (this.operation != null) {
+                    this.previousOperandDisplay.textContent = `${this.previousOperand} ${this.operation}`;
+                } else {
+                    this.previousOperandDisplay.textContent = '';
+                }
+            }
         }
-      }
 
-      // safe evaluator: only allows digits, operators, parentheses, decimal, percent and whitespace
-      // It converts % to division by 100 and uses JS eval on the sanitized expression.
-      function safeEval(input){
-        if (!input || input.trim()==='') return '';
-        // Reject any disallowed characters
-        // allowed chars: digits, + - * / . ( ) % and spaces
-        if (!/^[0-9+\-*/().%\s]+$/.test(input)) {
-          throw new Error('Invalid characters');
-        }
-        // Replace percentage occurrences: e.g. "50%" => "(50/100)"
-        // But handle "50+10%" => "50+(10/100)"
-        let transformed = input.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
-        // Replace any accidental multiple operators like "++" etc (let JS handle errors)
-        // Evaluate using Function constructor (safer than eval in some contexts)
-        // Note: still local only; input sanitized earlier.
-        // Avoid allowing leading zeros trickery: it's fine for JS numbers.
-        // Evaluate
-        // Protect against extremely long inputs
-        if (transformed.length > 200) throw new Error('Expression too long');
-        // compute result
-        const result = Function('"use strict"; return (' + transformed + ')')();
-        // handle non-finite results
-        if (!isFinite(result)) throw new Error('Math error');
-        // trim unnecessary decimals: if integer show as integer, else round sensibly
-        if (Math.abs(result - Math.round(result)) < 1e-12) return Math.round(result);
-        return parseFloat(result.toFixed(12)).toString();
-      }
+        // Initialize calculator
+        const calculator = new Calculator();
 
-      // handle button clicks
-      keys.addEventListener('click', (e) => {
-        const btn = e.target.closest('button');
-        if (!btn) return;
-        const val = btn.dataset.value;
-        const action = btn.dataset.action;
+        // Add button press animation
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                button.classList.add('pressed');
+                setTimeout(() => {
+                    button.classList.remove('pressed');
+                }, 200);
+            });
+        });
 
-        if (action === 'clear') {
-          expression = '';
-          updateScreen();
-          return;
-        }
-        if (action === 'back') {
-          expression = expression.slice(0, -1);
-          updateScreen();
-          return;
-        }
-        if (action === 'equal') {
-          try {
-            const value = safeEval(expression);
-            expression = String(value);
-            updateScreen();
-          } catch (err) {
-            resEl.textContent = 'Error';
-          }
-          return;
-        }
-        if (action === 'percent') {
-          // append % which safeEval will transform
-          expression += '%';
-          updateScreen();
-          return;
-        }
-        // value button (number, operator, dot, parentheses)
-        if (val !== undefined) {
-          expression += val;
-          updateScreen();
-        }
-      });
+        // Keyboard support
+        document.addEventListener('keydown', (event) => {
+            if (event.key >= '0' && event.key <= '9' || event.key === '.') {
+                appendNumber(event.key);
+            }
+            if (event.key === '+' || event.key === '-') {
+                appendOperator(event.key);
+            }
+            if (event.key === '*') {
+                appendOperator('×');
+            }
+            if (event.key === '/') {
+                event.preventDefault();
+                appendOperator('÷');
+            }
+            if (event.key === '%') {
+                appendOperator('%');
+            }
+            if (event.key === 'Enter' || event.key === '=') {
+                calculate();
+            }
+            if (event.key === 'Backspace') {
+                deleteLast();
+            }
+            if (event.key === 'Escape') {
+                clear();
+            }
+        });
 
-      // keyboard support
-      window.addEventListener('keydown', (e) => {
-        // allow digits and operators via keys
-        const key = e.key;
-
-        // handle Enter / =
-        if (key === 'Enter' || key === '=') {
-          e.preventDefault();
-          try {
-            const value = safeEval(expression);
-            expression = String(value);
-            updateScreen();
-          } catch (err) {
-            resEl.textContent = 'Error';
-          }
-          return;
-        }
-
-        if (key === 'Backspace') {
-          expression = expression.slice(0, -1);
-          updateScreen();
-          return;
-        }
-
-        if (key === 'Escape' || key.toLowerCase() === 'c') {
-          expression = '';
-          updateScreen();
-          return;
-        }
-
-        // allow parentheses
-        if (key === '(' || key === ')') {
-          expression += key;
-          updateScreen();
-          return;
-        }
-
-        // percent
-        if (key === '%') {
-          expression += '%';
-          updateScreen();
-          return;
-        }
-
-        // allowed operator keys: + - * / . and digits
-        if (/^[0-9+\-*/.]$/.test(key)) {
-          expression += key;
-          updateScreen();
-          return;
-        }
-      });
-
-      // initialize
-      updateScreen();
-    })();
-  </script>
+        // Fix the clear function name conflict
+        document.querySelector('.clear').onclick = clear;
+    </script>
 </body>
 </html>
