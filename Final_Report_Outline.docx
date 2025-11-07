@@ -1,0 +1,73 @@
+# Technical Report Outline
+
+## Title Page
+- Title: Automation of Cloud Infrastructure Deployment and CI/CD Pipeline
+- Author: [Your Name]
+- Date: November 6, 2025
+- Word Count: [To be filled after completion]
+
+## Summary
+- Brief overview of the project objectives, phases, tools used, challenges, results, and conclusions.
+
+## Introduction
+- Objectives of the report
+- Scope of automation (cloud account creation, infrastructure provisioning, configuration management, containerization, CI/CD)
+- Approach and methodology
+
+## Content
+### 1. Cloud Account Creation (Azure)
+- Steps to create a free Azure account
+- Rationale for choosing Azure
+- Alternative cloud providers (AWS, GCP) and comparison
+- Challenges faced and solutions
+
+### 2. Infrastructure Provisioning with Terraform
+- Overview of Terraform and Infrastructure as Code (IaC)
+- Structure and purpose of Terraform scripts
+- Resource provisioning (VMs, networking, storage)
+- Benefits and limitations
+- Alternative IaC tools (CloudFormation, Pulumi)
+- Challenges and solutions
+
+### 3. Configuration Management with Ansible
+- Role of Ansible in automation
+- Playbook structure and usage
+- Vault for secrets management
+- Inventory management
+- Alternative tools (Chef, Puppet)
+- Challenges and solutions
+
+### 4. Containerization with Docker
+- Purpose of Docker in the project
+- Dockerfile and application containerization
+- Benefits of containerization
+- Alternative approaches (Podman, LXC)
+- Challenges and solutions
+
+### 5. CI/CD Pipeline with GitHub Actions
+- Overview of CI/CD and GitHub Actions
+- Workflow configuration and automation steps
+- Integration with Terraform, Ansible, and Docker
+- Benefits and limitations
+- Alternative CI/CD tools (Jenkins, GitLab CI)
+- Challenges and solutions
+
+### Architecture Diagram
+- Detailed diagram illustrating the flow from cloud account creation to CI/CD deployment
+
+## Conclusions
+- Summary of achievements
+- Lessons learned
+- Suggestions for improvements and future work
+
+## References
+- List of all sources, documentation, URLs, and lecture notes referenced
+
+## Appendices
+- Screenshots of each phase
+- Additional details (if required)
+- GitHub repository link with all scripts and configurations
+
+---
+
+**Note:** The main report should be limited to 7 pages in a simple 1 column 12pt format. Appendices can include extra details and screenshots.
